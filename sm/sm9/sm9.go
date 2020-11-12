@@ -6,8 +6,8 @@ package sm9
 
 import (
 	"crypto/rand"
-	"github.com/xlcetc/cryptogm/elliptic/sm9curve"
-	"github.com/xlcetc/cryptogm/sm/sm3"
+	"github.com/triplewz/cryptogm/elliptic/sm9curve"
+	"github.com/triplewz/cryptogm/sm/sm3"
 	"encoding/binary"
 	"github.com/pkg/errors"
 	"io"
