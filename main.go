@@ -1,5 +1,7 @@
 package main
 
-//TODO
+func main() {
+	//TODO
+}
 
 
