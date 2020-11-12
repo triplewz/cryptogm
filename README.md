@@ -7,7 +7,7 @@ Some algorithms have been optimized using AVX2 instructions.
 # Install 
 
 ```
-go get github.com/xlcetc/cryptogm
+go get github.com/triplewz/cryptogm
 ```
 
 # Benchmark
