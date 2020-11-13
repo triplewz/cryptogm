@@ -6,6 +6,7 @@ package sm3
 
 import (
 	"hash"
+	"golang.org/x/sys/cpu"
 )
 
 // The size of a SM3 checksum in bytes.
@@ -67,12 +68,12 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 		n := copy(d.x[d.nx:], p)
 		d.nx += n
 		if d.nx == chunk {
-			//if cpu.X86.HasAVX2 && cpu.X86.HasBMI2 {
-			//	block(d, d.x[:])
-			//} else {
-			//	Block(d, d.x[:])
-			//}
-			block(d, d.x[:])
+			if cpu.X86.HasAVX2 && cpu.X86.HasBMI2 {
+				block(d, d.x[:])
+			} else {
+				Block(d, d.x[:])
+			}
+			//block(d, d.x[:])
 			d.nx = 0
 		}
 		p = p[n:]
@@ -80,12 +81,12 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
 	if len(p) >= chunk {
 		n := len(p) &^ (chunk - 1)
-		//if cpu.X86.HasAVX2 && cpu.X86.HasBMI2 {
-		//	block(d, p[:n])
-		//} else {
-		//	Block(d, p[:n])
-		//}
-		block(d, p[:n])
+		if cpu.X86.HasAVX2 && cpu.X86.HasBMI2 {
+			block(d, p[:n])
+		} else {
+			Block(d, p[:n])
+		}
+		//block(d, p[:n])
 		p = p[n:]
 	}
 	if len(p) > 0 {
