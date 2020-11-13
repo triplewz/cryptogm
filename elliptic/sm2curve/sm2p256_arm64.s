@@ -571,8 +571,8 @@ TEXT ·sm2p256ordMul(SB),NOSPLIT,$0
 	MOVD	in2+48(FP), b_ptr
 
 	MOVD	K0<>(SB), hlp1
-	LDP	<>+0x00(SB), (const0, const1)
-	LDP	<>+0x10(SB), (const2, const3)
+	LDP	p256Gmord<>+0x00(SB), (const0, const1)
+	LDP	p256Gmord<>+0x10(SB), (const2, const3)
 
 	LDP	0*16(a_ptr), (x0, x1)
 	LDP	1*16(a_ptr), (x2, x3)
