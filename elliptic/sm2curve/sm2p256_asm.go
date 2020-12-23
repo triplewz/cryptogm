@@ -101,89 +101,89 @@ func sm2p256TestMulBy2Inline(res, in1 []uint64)
 func sm2p256TestSqrInternal(res, in1 []uint64)
 func sm2p256TestAddInline(res, in1, in2 []uint64)
 
-func (curve p256Curve) Inverse(k *big.Int) *big.Int {
-	if k.Sign() < 0 {
-		// This should never happen.
-		k = new(big.Int).Neg(k)
-	}
-
-	if k.Cmp(p256.N) >= 0 {
-		// This should never happen.
-		k = new(big.Int).Mod(k, p256.N)
-	}
-
-	// table will store precomputed powers of x. The four words at index
-	// 4×i store x^(i+1).
-	var table [4 * 15]uint64
-
-	x := make([]uint64, 4)
-	fromBig(x[:], k)
-	// This code operates in the Montgomery domain where R = 2^256 mod n
-	// and n is the order of the scalar field. (See initP256 for the
-	// value.) Elements in the Montgomery domain take the form a×R and
-	// multiplication of x and y in the calculates (x × y × R^-1) mod n. RR
-	// is R×R mod n thus the Montgomery multiplication x and RR gives x×R,
-	// i.e. converts x into the Montgomery domain.
-	//	RR := []uint64{0x83244c95be79eea2, 0x4699799c49bd6fa6, 0x2845b2392b6bec59, 0x66e12d94f3d95620}
-	RR := []uint64{0x901192AF7C114F20, 0x3464504ADE6FA2FA, 0x620FC84C3AFFE0D4, 0x1EB5E412A22B3D3B}
-
-	sm2p256OrdMul(table[:4], x, RR)
-
-	// Prepare the table, no need in constant time access, because the
-	// power is not a secret. (Entry 0 is never used.)
-	for i := 2; i < 16; i += 2 {
-		sm2p256OrdSqr(table[4*(i-1):], table[4*((i/2)-1):], 1)
-		sm2p256OrdMul(table[4*i:], table[4*(i-1):], table[:4])
-	}
-
-	x[0] = table[4*14+0] // f
-	x[1] = table[4*14+1]
-	x[2] = table[4*14+2]
-	x[3] = table[4*14+3]
-
-	sm2p256OrdSqr(x, x, 4)
-	sm2p256OrdMul(x, x, table[4*14:4*14+4]) // ff
-	t := make([]uint64, 4, 4)
-	t[0] = x[0]
-	t[1] = x[1]
-	t[2] = x[2]
-	t[3] = x[3]
-
-	sm2p256OrdSqr(x, x, 8)
-	sm2p256OrdMul(x, x, t) // ffff
-	t[0] = x[0]
-	t[1] = x[1]
-	t[2] = x[2]
-	t[3] = x[3]
-
-	sm2p256OrdSqr(x, x, 16)
-	sm2p256OrdMul(x, x, t) // ffffffff
-	t[0] = x[0]
-	t[1] = x[1]
-	t[2] = x[2]
-	t[3] = x[3]
-
-	sm2p256OrdSqr(x, x, 64) // ffffffff0000000000000000
-	sm2p256OrdMul(x, x, t)  // ffffffff00000000ffffffff
-	sm2p256OrdSqr(x, x, 32) // ffffffff00000000ffffffff00000000
-	sm2p256OrdMul(x, x, t)  // ffffffff00000000ffffffffffffffff
-
-	// Remaining 32 windows
-	expLo := [32]byte{0xb, 0xc, 0xe, 0x6, 0xf, 0xa, 0xa, 0xd, 0xa, 0x7, 0x1, 0x7, 0x9, 0xe, 0x8, 0x4, 0xf, 0x3, 0xb, 0x9, 0xc, 0xa, 0xc, 0x2, 0xf, 0xc, 0x6, 0x3, 0x2, 0x5, 0x4, 0xf}
-	for i := 0; i < 32; i++ {
-		sm2p256OrdSqr(x, x, 4)
-		sm2p256OrdMul(x, x, table[4*(expLo[i]-1):])
-	}
-
-	// Multiplying by one in the Montgomery domain converts a Montgomery
-	// value out of the domain.
-	one := []uint64{1, 0, 0, 0}
-	sm2p256OrdMul(x, x, one)
-
-	xOut := make([]byte, 32)
-	sm2p256LittleToBig(xOut, x)
-	return new(big.Int).SetBytes(xOut)
-}
+//func (curve p256Curve) Inverse(k *big.Int) *big.Int {
+//	if k.Sign() < 0 {
+//		// This should never happen.
+//		k = new(big.Int).Neg(k)
+//	}
+//
+//	if k.Cmp(p256.N) >= 0 {
+//		// This should never happen.
+//		k = new(big.Int).Mod(k, p256.N)
+//	}
+//
+//	// table will store precomputed powers of x. The four words at index
+//	// 4×i store x^(i+1).
+//	var table [4 * 15]uint64
+//
+//	x := make([]uint64, 4)
+//	fromBig(x[:], k)
+//	// This code operates in the Montgomery domain where R = 2^256 mod n
+//	// and n is the order of the scalar field. (See initP256 for the
+//	// value.) Elements in the Montgomery domain take the form a×R and
+//	// multiplication of x and y in the calculates (x × y × R^-1) mod n. RR
+//	// is R×R mod n thus the Montgomery multiplication x and RR gives x×R,
+//	// i.e. converts x into the Montgomery domain.
+//	//	RR := []uint64{0x83244c95be79eea2, 0x4699799c49bd6fa6, 0x2845b2392b6bec59, 0x66e12d94f3d95620}
+//	RR := []uint64{0x901192AF7C114F20, 0x3464504ADE6FA2FA, 0x620FC84C3AFFE0D4, 0x1EB5E412A22B3D3B}
+//
+//	sm2p256OrdMul(table[:4], x, RR)
+//
+//	// Prepare the table, no need in constant time access, because the
+//	// power is not a secret. (Entry 0 is never used.)
+//	for i := 2; i < 16; i += 2 {
+//		sm2p256OrdSqr(table[4*(i-1):], table[4*((i/2)-1):], 1)
+//		sm2p256OrdMul(table[4*i:], table[4*(i-1):], table[:4])
+//	}
+//
+//	x[0] = table[4*14+0] // f
+//	x[1] = table[4*14+1]
+//	x[2] = table[4*14+2]
+//	x[3] = table[4*14+3]
+//
+//	sm2p256OrdSqr(x, x, 4)
+//	sm2p256OrdMul(x, x, table[4*14:4*14+4]) // ff
+//	t := make([]uint64, 4, 4)
+//	t[0] = x[0]
+//	t[1] = x[1]
+//	t[2] = x[2]
+//	t[3] = x[3]
+//
+//	sm2p256OrdSqr(x, x, 8)
+//	sm2p256OrdMul(x, x, t) // ffff
+//	t[0] = x[0]
+//	t[1] = x[1]
+//	t[2] = x[2]
+//	t[3] = x[3]
+//
+//	sm2p256OrdSqr(x, x, 16)
+//	sm2p256OrdMul(x, x, t) // ffffffff
+//	t[0] = x[0]
+//	t[1] = x[1]
+//	t[2] = x[2]
+//	t[3] = x[3]
+//
+//	sm2p256OrdSqr(x, x, 64) // ffffffff0000000000000000
+//	sm2p256OrdMul(x, x, t)  // ffffffff00000000ffffffff
+//	sm2p256OrdSqr(x, x, 32) // ffffffff00000000ffffffff00000000
+//	sm2p256OrdMul(x, x, t)  // ffffffff00000000ffffffffffffffff
+//
+//	// Remaining 32 windows
+//	expLo := [32]byte{0xb, 0xc, 0xe, 0x6, 0xf, 0xa, 0xa, 0xd, 0xa, 0x7, 0x1, 0x7, 0x9, 0xe, 0x8, 0x4, 0xf, 0x3, 0xb, 0x9, 0xc, 0xa, 0xc, 0x2, 0xf, 0xc, 0x6, 0x3, 0x2, 0x5, 0x4, 0xf}
+//	for i := 0; i < 32; i++ {
+//		sm2p256OrdSqr(x, x, 4)
+//		sm2p256OrdMul(x, x, table[4*(expLo[i]-1):])
+//	}
+//
+//	// Multiplying by one in the Montgomery domain converts a Montgomery
+//	// value out of the domain.
+//	one := []uint64{1, 0, 0, 0}
+//	sm2p256OrdMul(x, x, one)
+//
+//	xOut := make([]byte, 32)
+//	sm2p256LittleToBig(xOut, x)
+//	return new(big.Int).SetBytes(xOut)
+//}
 
 // fromBig converts a *big.Int into a format used by this code.
 func fromBig(out []uint64, big *big.Int) {

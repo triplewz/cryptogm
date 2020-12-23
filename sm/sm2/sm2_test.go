@@ -6,9 +6,9 @@ package sm2
 import (
 	"bytes"
 	"crypto/rand"
-	"github.com/triplewz/cryptogm/sm/sm3"
-	"github.com/triplewz/cryptogm/elliptic/sm2curve"
 	"encoding/hex"
+	"github.com/triplewz/cryptogm/elliptic/sm2curve"
+	"github.com/triplewz/cryptogm/sm/sm3"
 	"math/big"
 	"testing"
 )
