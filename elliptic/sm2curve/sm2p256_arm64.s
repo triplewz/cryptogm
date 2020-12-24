@@ -1659,7 +1659,6 @@ TEXT ·sm2p256PointAddAsm(SB),0,$392-80
 
 	RET
 
-
 /* ---------------------------------------*/
 TEXT ·sm2p256TestSubInternal(SB),NOSPLIT,$0
     MOVD res+0(FP), res_ptr
@@ -1679,4 +1678,72 @@ TEXT ·sm2p256TestSubInternal(SB),NOSPLIT,$0
 
 	RET
 
+/* ---------------------------------------*/
+TEXT ·sm2p256TestMulInternal(SB),NOSPLIT,$0
+    MOVD res+0(FP), res_ptr
+    MOVD in1+24(FP), a_ptr
+    MOVD in2+48(FP), b_ptr
 
+	LDP	0*16(a_ptr), (acc0, acc1)
+	LDP	1*16(a_ptr), (acc2, acc3)
+
+	LDP	0*16(b_ptr), (t0, t1)
+	LDP	1*16(b_ptr), (t2, t3)
+
+	CALL    sm2p256MulInternal<>(SB)
+
+	STP	(acc0, acc1), 0*16(res_ptr)
+	STP	(acc2, acc3), 1*16(res_ptr)
+
+	RET
+
+/* ---------------------------------------*/
+TEXT ·sm2p256TestMulBy2Inline(SB),NOSPLIT,$0
+    MOVD res+0(FP), res_ptr
+    MOVD in1+24(FP), a_ptr
+    MOVD in2+48(FP), b_ptr
+
+	LDP	0*16(a_ptr), (acc0, acc1)
+	LDP	1*16(a_ptr), (acc2, acc3)
+
+	sm2p256MulBy2Inline
+
+	STP	(acc0, acc1), 0*16(res_ptr)
+	STP	(acc2, acc3), 1*16(res_ptr)
+
+	RET
+
+/* ---------------------------------------*/
+TEXT ·sm2p256TestSqrInternal(SB),NOSPLIT,$0
+    MOVD res+0(FP), res_ptr
+    MOVD in1+24(FP), a_ptr
+    MOVD in2+48(FP), b_ptr
+
+	LDP	0*16(a_ptr), (acc0, acc1)
+	LDP	1*16(a_ptr), (acc2, acc3)
+
+	CALL    sm2p256SqrInternal<>(SB)
+
+	STP	(acc0, acc1), 0*16(res_ptr)
+	STP	(acc2, acc3), 1*16(res_ptr)
+
+	RET
+
+/* ---------------------------------------*/
+TEXT ·sm2p256TestAddInline(SB),NOSPLIT,$0
+    MOVD res+0(FP), res_ptr
+    MOVD in1+24(FP), a_ptr
+    MOVD in2+48(FP), b_ptr
+
+	LDP	0*16(a_ptr), (acc0, acc1)
+	LDP	1*16(a_ptr), (acc2, acc3)
+
+	LDP	0*16(b_ptr), (t0, t1)
+	LDP	1*16(b_ptr), (t2, t3)
+
+	sm2p256AddInline
+
+	STP	(acc0, acc1), 0*16(res_ptr)
+	STP	(acc2, acc3), 1*16(res_ptr)
+
+	RET
