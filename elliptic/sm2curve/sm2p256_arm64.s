@@ -1186,8 +1186,7 @@ TEXT sm2p256MulInternal<>(SB),NOSPLIT,$0
 	ADC	$0, ZR, hlp0;  \
 	SUBS	$-1, x0, t0;   \
 	SBCS	const0, x1, t1;\
-
-	MOVD $-1, negone;
+	MOVD $-1, negone;\
 	SBCS	negone, x2, t2;    \
 	SBCS	const1, x3, t3;\
 	SBCS	$0, hlp0, hlp0;\
@@ -1408,8 +1407,7 @@ TEXT ·sm2p256PointAddAffineAsm(SB),0,$264-96
 	ADC	$0, ZR, hlp0;  \
 	SUBS	$-1, x0, t0;   \
 	SBCS	const0, x1, t1;\
-
-	MOVD $-1, negone;
+	MOVD $-1, negone;\
 	SBCS	negone, x2, t2;    \
 	SBCS	const1, x3, t3;\
 	SBCS	$0, hlp0, hlp0;\
