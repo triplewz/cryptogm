@@ -1658,3 +1658,25 @@ TEXT ·sm2p256PointAddAsm(SB),0,$392-80
 	MOVD	R0, ret+72(FP)
 
 	RET
+
+
+/* ---------------------------------------*/
+TEXT ·sm2p256TestSubInternal(SB),NOSPLIT,$0
+    MOVD res+0(FP), res_ptr
+    MOVD in1+24(FP), a_ptr
+    MOVD in2+48(FP), b_ptr
+
+	LDP	0*16(a_ptr), (acc0, acc1)
+	LDP	1*16(a_ptr), (acc2, acc3)
+
+	LDP	0*16(b_ptr), (t0, t1)
+	LDP	1*16(b_ptr), (t2, t3)
+
+	CALL    sm2p256SubInternal<>(SB)
+
+	STP	(acc0, acc1), 0*16(res_ptr)
+	STP	(acc2, acc3), 1*16(res_ptr)
+
+	RET
+
+
