@@ -3,7 +3,7 @@ package sm2curve
 import "testing"
 
 func TestP256Point(t *testing.T)  {
-	Test_p256Func()
+	TestP256_Point()
 }
 
 func TestP256InternalFunc(t *testing.T)  {
