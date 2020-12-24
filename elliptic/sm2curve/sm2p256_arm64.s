@@ -406,7 +406,7 @@ loop_select:
 	RET
 /* ---------------------------------------*/
 // func sm2p256ordSqr(res, in []uint64, n int)
-TEXT ·sm2p256ordSqr(SB),NOSPLIT,$0
+TEXT ·sm2p256OrdSqr(SB),NOSPLIT,$0
 	MOVD	in+24(FP), a_ptr
 	MOVD	n+48(FP), b_ptr
 
@@ -605,7 +605,7 @@ ordSqrLoop:
 	RET
 /* ---------------------------------------*/
 // func sm2p256ordMul(res, in1, in2 []uint64)
-TEXT ·sm2p256ordMul(SB),NOSPLIT,$0
+TEXT ·sm2p256OrdMul(SB),NOSPLIT,$0
 	MOVD	in1+24(FP), a_ptr
 	MOVD	in2+48(FP), b_ptr
 
