@@ -8,6 +8,7 @@ go:
 install:
   - go get github.com/triplewz/cryptogm
 script:
+  - go test -v ./elliptic/sm2curve/
   - go test -v ./sm/sm2/
   - go test -v ./sm/sm3/
   - go test -v ./sm/sm4/
