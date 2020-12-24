@@ -163,11 +163,10 @@ TEXT ·sm2p256NegCond(SB),NOSPLIT,$0
 
 	RET
 /* ---------------------------------------*/
-// func sm2p256Sqr(res, in []uint64, n int)
+// func sm2p256Sqr(res, in []uint64)
 TEXT ·sm2p256Sqr(SB),NOSPLIT,$0
 	MOVD	res+0(FP), res_ptr
 	MOVD	in+24(FP), a_ptr
-	MOVD	n+48(FP), b_ptr
 
 	MOVD	p256const0<>(SB), const0
 	MOVD	p256const1<>(SB), const1
@@ -175,14 +174,11 @@ TEXT ·sm2p256Sqr(SB),NOSPLIT,$0
 	LDP	0*16(a_ptr), (x0, x1)
 	LDP	1*16(a_ptr), (x2, x3)
 
-sqrLoop:
-	SUB	$1, b_ptr
 	CALL	sm2p256SqrInternal<>(SB)
 	MOVD	y0, x0
 	MOVD	y1, x1
 	MOVD	y2, x2
 	MOVD	y3, x3
-	CBNZ	b_ptr, sqrLoop
 
 	STP	(y0, y1), 0*16(res_ptr)
 	STP	(y2, y3), 1*16(res_ptr)
