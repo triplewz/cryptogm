@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"github.com/triplewz/cryptogm/elliptic/sm2curve"
 	"github.com/triplewz/cryptogm/sm/sm3"
 	"math/big"
@@ -20,6 +21,10 @@ func TestKeyGen(t *testing.T) {
 		t.Errorf("error: %s", err)
 		return
 	}
+
+	fmt.Printf("%x\n",priv.D)
+	fmt.Printf("%x\n",priv.X)
+	fmt.Printf("%x\n",priv.Y)
 
 	if !priv.PublicKey.Curve.IsOnCurve(priv.PublicKey.X, priv.PublicKey.Y) {
 		t.Errorf("public key is invalid: %s", err)
