@@ -928,8 +928,11 @@ func TestP256_Point() {
 
 	//r1:=AffineToP256Point(x,y)
 	fmt.Println("p256PointAdd test:")
-	res := make([]uint64, 12)
-	sm2p256PointAddAsm(res, r.xyz[0:12], r.xyz[0:12])
+	x, _ = new(big.Int).SetString("A37EBD14B5DDD103063365FC8C41E36A1817374CE3CB455F65E2D83186A0BAB9", 16)
+	y, _ = new(big.Int).SetString("9F9E151C5075CD52A30B4C0B63E5A58E4850910F8C04397F04E97241FD3D364C", 16)
+	r11 := AffineToP256Point(x, y)
+	res := make([]uint64,12)
+	sm2p256PointAddAsm(res, r.xyz[:], r11.xyz[:])
 	x2, y2 := Uint64ToAffine(res)
 	Hexprint(x2.Bytes())
 	Hexprint(y2.Bytes())
