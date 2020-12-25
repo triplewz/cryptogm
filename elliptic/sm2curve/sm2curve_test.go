@@ -1,6 +1,8 @@
 package sm2curve
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestP256Point(t *testing.T)  {
 	TestP256_Point()

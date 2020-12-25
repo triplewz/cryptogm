@@ -1190,8 +1190,8 @@ ordSqrLoop:
 	SHLQ $32, AX
 	SHRQ $32, DX
 
-	ADDQ t1, acc3
-	ADCQ $0, acc0
+	//ADDQ t1, acc3
+	//ADCQ $0, acc0
 	SUBQ AX, acc3
 	SBBQ DX, acc0
 	// Second reduction step
@@ -1223,8 +1223,8 @@ ordSqrLoop:
 	SHLQ $32, AX
 	SHRQ $32, DX
 
-	ADDQ t1, acc0
-	ADCQ $0, acc1
+	//ADDQ t1, acc0
+	//ADCQ $0, acc1
 	SUBQ AX, acc0
 	SBBQ DX, acc1
 	// Third reduction step
@@ -1256,8 +1256,8 @@ ordSqrLoop:
 	SHLQ $32, AX
 	SHRQ $32, DX
 
-	ADDQ t1, acc1
-	ADCQ $0, acc2
+	//ADDQ t1, acc1
+	//ADCQ $0, acc2
 	SUBQ AX, acc1
 	SBBQ DX, acc2
 	// Last reduction step
@@ -1291,8 +1291,8 @@ ordSqrLoop:
 	SHLQ $32, AX
 	SHRQ $32, DX
 
-	ADDQ t1, acc2
-	ADCQ $0, acc3
+	//ADDQ t1, acc2
+	//ADCQ $0, acc3
 	SUBQ AX, acc2
 	SBBQ DX, acc3
 	XORQ t0, t0

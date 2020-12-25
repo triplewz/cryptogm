@@ -1,7 +1,6 @@
 package sm9curve
 
 import (
-	"fmt"
 	"testing"
 
 	"bytes"
@@ -426,8 +425,8 @@ func BenchmarkPairing(b *testing.B) {
 	}
 }
 
-func TestMiller(t *testing.T) {
-	gt := Pair(&G1{curveGen}, &G2{twistGen})
-
-	fmt.Println(gt.String())
-}
+//func TestMiller(t *testing.T) {
+//	gt := Pair(&G1{curveGen}, &G2{twistGen})
+//
+//	fmt.Println(gt.String())
+//}
