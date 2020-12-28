@@ -53,52 +53,72 @@ func (curve p256Curve) Params() *CurveParams {
 
 // Functions implemented in sm2p256_amd64.s
 // Montgomery multiplication modulo P256
+//go:noescape
 func sm2p256Mul(res, in1, in2 []uint64)
+//go:noescape
 func p256TestMul(res, in1, in2 []uint64)
 
 // Montgomery square modulo P256
+//go:noescape
 func sm2p256Sqr(res, in []uint64)
 
 // Montgomery multiplication by 1
+//go:noescape
 func sm2p256FromMont(res, in []uint64)
 
 // iff cond == 1  val <- -val
+//go:noescape
 func sm2p256NegCond(val []uint64, cond int)
 
 // if cond == 0 res <- b; else res <- a
+//go:noescape
 func sm2p256MovCond(res, a, b []uint64, cond int)
 
 // Endianness swap
+//go:noescape
 func sm2p256BigToLittle(res []uint64, in []byte)
+//go:noescape
 func sm2p256LittleToBig(res []byte, in []uint64)
 
 // Constant time table access
+//go:noescape
 func sm2p256Select(point, table []uint64, idx int)
+//go:noescape
 func sm2p256SelectBase(point, table []uint64, idx int)
 
 // Montgomery multiplication modulo Ord(G)
+//go:noescape
 func sm2p256OrdMul(res, in1, in2 []uint64)
 
 // Montgomery square modulo Ord(G), repeated n times
+//go:noescape
 func sm2p256OrdSqr(res, in []uint64, n int)
 
 // Point add with in2 being affine point
 // If sign == 1 -> in2 = -in2
 // If sel == 0 -> res = in1
 // if zero == 0 -> res = in2
+//go:noescape
 func sm2p256PointAddAffineAsm(res, in1, in2 []uint64, sign, sel, zero int)
 
 // Point add
+//go:noescape
 func sm2p256PointAddAsm(res, in1, in2 []uint64) int
 
 // Point double
+//go:noescape
 func sm2p256PointDoubleAsm(res, in []uint64)
 
 //Test Internal Func
+//go:noescape
 func sm2p256TestSubInternal(res, in1, in2 []uint64)
+//go:noescape
 func sm2p256TestMulInternal(res, in1, in2 []uint64)
+//go:noescape
 func sm2p256TestMulBy2Inline(res, in1 []uint64)
+//go:noescape
 func sm2p256TestSqrInternal(res, in1 []uint64)
+//go:noescape
 func sm2p256TestAddInline(res, in1, in2 []uint64)
 
 //func (curve p256Curve) Inverse(k *big.Int) *big.Int {
