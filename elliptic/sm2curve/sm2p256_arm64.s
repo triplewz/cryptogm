@@ -1243,7 +1243,8 @@ TEXT ·sm2p256PointAddAffineAsm(SB),0,$264-96
 
 	SUBS	y0, acc0, acc0
 	SBCS	y1, const0, acc1
-	SBCS	y2, ZR, acc2
+	MOVD    $-1, negone
+	SBCS	y2, negone, acc2
 	SBCS	y3, const1, acc3
 	SBC	$0, ZR, t0
 
@@ -1665,16 +1666,18 @@ TEXT ·sm2p256TestSubInternal(SB),NOSPLIT,$0
     MOVD in1+24(FP), a_ptr
     MOVD in2+48(FP), b_ptr
 
-	LDP	0*16(a_ptr), (acc0, acc1)
-	LDP	1*16(a_ptr), (acc2, acc3)
+	MOVD	p256const0<>(SB), const0
+	MOVD	p256const1<>(SB), const1
 
-	LDP	0*16(b_ptr), (t0, t1)
-	LDP	1*16(b_ptr), (t2, t3)
+	LDP	0*16(a_ptr), (y0, y1)
+	LDP	1*16(a_ptr), (y2, y3)
 
+	LDP	0*16(b_ptr), (x0, x1)
+	LDP	1*16(b_ptr), (x2, x3)
 	CALL    sm2p256SubInternal<>(SB)
 
-	STP	(acc0, acc1), 0*16(res_ptr)
-	STP	(acc2, acc3), 1*16(res_ptr)
+	STP	(x0, x1), 0*16(res_ptr)
+	STP	(x2, x3), 1*16(res_ptr)
 
 	RET
 
@@ -1684,16 +1687,19 @@ TEXT ·sm2p256TestMulInternal(SB),NOSPLIT,$0
     MOVD in1+24(FP), a_ptr
     MOVD in2+48(FP), b_ptr
 
-	LDP	0*16(a_ptr), (acc0, acc1)
-	LDP	1*16(a_ptr), (acc2, acc3)
+	MOVD	p256const0<>(SB), const0
+	MOVD	p256const1<>(SB), const1
 
-	LDP	0*16(b_ptr), (t0, t1)
-	LDP	1*16(b_ptr), (t2, t3)
+	LDP	0*16(a_ptr), (y0, y1)
+	LDP	1*16(a_ptr), (y2, y3)
+
+	LDP	0*16(b_ptr), (x0, x1)
+	LDP	1*16(b_ptr), (x2, x3)
 
 	CALL    sm2p256MulInternal<>(SB)
 
-	STP	(acc0, acc1), 0*16(res_ptr)
-	STP	(acc2, acc3), 1*16(res_ptr)
+	STP	(y0, y1), 0*16(res_ptr)
+	STP	(y2, y3), 1*16(res_ptr)
 
 	RET
 
@@ -1701,15 +1707,16 @@ TEXT ·sm2p256TestMulInternal(SB),NOSPLIT,$0
 TEXT ·sm2p256TestMulBy2Inline(SB),NOSPLIT,$0
     MOVD res+0(FP), res_ptr
     MOVD in1+24(FP), a_ptr
-    MOVD in2+48(FP), b_ptr
 
-	LDP	0*16(a_ptr), (acc0, acc1)
-	LDP	1*16(a_ptr), (acc2, acc3)
+	MOVD	p256const0<>(SB), const0
+	MOVD	p256const1<>(SB), const1
 
+	LDP	0*16(a_ptr), (y0, y1)
+	LDP	1*16(a_ptr), (y2, y3)
 	sm2p256MulBy2Inline
 
-	STP	(acc0, acc1), 0*16(res_ptr)
-	STP	(acc2, acc3), 1*16(res_ptr)
+	STP	(x0, x1), 0*16(res_ptr)
+	STP	(x2, x3), 1*16(res_ptr)
 
 	RET
 
@@ -1717,15 +1724,16 @@ TEXT ·sm2p256TestMulBy2Inline(SB),NOSPLIT,$0
 TEXT ·sm2p256TestSqrInternal(SB),NOSPLIT,$0
     MOVD res+0(FP), res_ptr
     MOVD in1+24(FP), a_ptr
-    MOVD in2+48(FP), b_ptr
 
-	LDP	0*16(a_ptr), (acc0, acc1)
-	LDP	1*16(a_ptr), (acc2, acc3)
+	MOVD	p256const0<>(SB), const0
+	MOVD	p256const1<>(SB), const1
 
+	LDP	0*16(a_ptr), (x0, x1)
+	LDP	1*16(a_ptr), (x2, x3)
 	CALL    sm2p256SqrInternal<>(SB)
 
-	STP	(acc0, acc1), 0*16(res_ptr)
-	STP	(acc2, acc3), 1*16(res_ptr)
+	STP	(y0, y1), 0*16(res_ptr)
+	STP	(y2, y3), 1*16(res_ptr)
 
 	RET
 
@@ -1735,15 +1743,17 @@ TEXT ·sm2p256TestAddInline(SB),NOSPLIT,$0
     MOVD in1+24(FP), a_ptr
     MOVD in2+48(FP), b_ptr
 
-	LDP	0*16(a_ptr), (acc0, acc1)
-	LDP	1*16(a_ptr), (acc2, acc3)
+	MOVD	p256const0<>(SB), const0
+	MOVD	p256const1<>(SB), const1
 
-	LDP	0*16(b_ptr), (t0, t1)
-	LDP	1*16(b_ptr), (t2, t3)
+	LDP	0*16(a_ptr), (y0, y1)
+	LDP	1*16(a_ptr), (y2, y3)
 
+	LDP	0*16(b_ptr), (x0, x1)
+	LDP	1*16(b_ptr), (x2, x3)
 	sm2p256AddInline
 
-	STP	(acc0, acc1), 0*16(res_ptr)
-	STP	(acc2, acc3), 1*16(res_ptr)
+	STP	(x0, x1), 0*16(res_ptr)
+	STP	(x2, x3), 1*16(res_ptr)
 
 	RET

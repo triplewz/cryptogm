@@ -15,8 +15,13 @@
 package sm2curve
 
 import (
+	"bytes"
+	"crypto/rand"
+	"encoding/json"
 	"fmt"
+	"io"
 	"math/big"
+	"os"
 	"sync"
 )
 
@@ -936,10 +941,40 @@ func (curve p256Curve) PreScalarMult(Precomputed *[37][64*8]uint64, scalar []byt
 	return
 }
 
+//func TestP256_Point() {
+//	fmt.Println("========================Test p256point==========================")
+//	x, _ := new(big.Int).SetString("32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7", 16)
+//	y, _ := new(big.Int).SetString("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16)
+//	r := AffineToP256Point(x, y)
+//	x1, y1 := Uint64ToAffine(r.xyz[:])
+//	fmt.Println("p256PointToAffine test:")
+//	Hexprint(x1.Bytes())
+//	Hexprint(y1.Bytes())
+//
+//	//r1:=AffineToP256Point(x,y)
+//	fmt.Println("p256PointAdd test:")
+//	x, _ = new(big.Int).SetString("A37EBD14B5DDD103063365FC8C41E36A1817374CE3CB455F65E2D83186A0BAB9", 16)
+//	y, _ = new(big.Int).SetString("9F9E151C5075CD52A30B4C0B63E5A58E4850910F8C04397F04E97241FD3D364C", 16)
+//	r11 := AffineToP256Point(x, y)
+//	res := make([]uint64,12)
+//	sm2p256PointAddAsm(res, r.xyz[:], r11.xyz[:])
+//	x2, y2 := Uint64ToAffine(res)
+//	Hexprint(x2.Bytes())
+//	Hexprint(y2.Bytes())
+//
+//	fmt.Println("p256PointDouble test:")
+//
+//	sm2p256PointDoubleAsm(r.xyz[:], r.xyz[:])
+//	sm2p256PointDoubleAsm(r.xyz[:], r.xyz[:])
+//	x3, y3 := Uint64ToAffine(r.xyz[:])
+//	Hexprint(x3.Bytes())
+//	Hexprint(y3.Bytes())
+//}
+
 func TestP256_Point() {
 	fmt.Println("========================Test p256point==========================")
-	x, _ := new(big.Int).SetString("32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7", 16)
-	y, _ := new(big.Int).SetString("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16)
+	x, _ := new(big.Int).SetString("5d3bfce528229362e269dd8ca34fa6a3d5f6f9f7bdba464f305bb61ab708b1e7", 16)
+	y, _ := new(big.Int).SetString("2fb37c54361c948888561bbfa20389644a1ac2c397222a02853bb6150e494af", 16)
 	r := AffineToP256Point(x, y)
 	x1, y1 := Uint64ToAffine(r.xyz[:])
 	fmt.Println("p256PointToAffine test:")
@@ -948,8 +983,8 @@ func TestP256_Point() {
 
 	//r1:=AffineToP256Point(x,y)
 	fmt.Println("p256PointAdd test:")
-	x, _ = new(big.Int).SetString("A37EBD14B5DDD103063365FC8C41E36A1817374CE3CB455F65E2D83186A0BAB9", 16)
-	y, _ = new(big.Int).SetString("9F9E151C5075CD52A30B4C0B63E5A58E4850910F8C04397F04E97241FD3D364C", 16)
+	x, _ = new(big.Int).SetString("a32966dbdaa6581ed6d1f28dc3c4fb0e15db5c422fce362f9828facae702d208", 16)
+	y, _ = new(big.Int).SetString("fb8ffc26ce678a9f69acf8997baaff6d3986ebf423bdb1175e6e3741e3b6f267", 16)
 	r11 := AffineToP256Point(x, y)
 	res := make([]uint64,12)
 	sm2p256PointAddAsm(res, r.xyz[:], r11.xyz[:])
@@ -1079,4 +1114,125 @@ func Test_arch64() {
 	res1 := make([]byte, 32)
 	sm2p256LittleToBig(res1, x_1)
 	Hexprint(res1)
+}
+
+func randFieldElement(c Curve, rand io.Reader) (k *big.Int, err error) {
+	params := c.Params()
+	b := make([]byte, params.BitSize/8+8)
+	_, err = io.ReadFull(rand, b)
+	if err != nil {
+		return
+	}
+	k = new(big.Int).SetBytes(b)
+	one := big.NewInt(1)
+	n := new(big.Int).Sub(params.N, one)
+	k.Mod(k, n)
+	k.Add(k, one)
+	return
+}
+
+type P256Point struct {
+	XYZ [12]uint64
+}
+
+type AddTest struct {
+	Point1 []P256Point
+	Point2 []P256Point
+	Point3 []P256Point
+}
+
+func ADD()  {
+	c := P256()
+	at := new(AddTest)
+	for i:=0;i<100;i++ {
+		k1,_ := randFieldElement(c,rand.Reader)
+
+		x1,y1 := c.ScalarBaseMult(k1.Bytes())
+
+		r1 := AffineToP256Point(x1, y1)
+
+		k2,_ := randFieldElement(c,rand.Reader)
+
+		x2,y2 := c.ScalarBaseMult(k2.Bytes())
+
+		r2 := AffineToP256Point(x2, y2)
+
+		res := make([]uint64,12)
+		sm2p256PointAddAsm(res, r1.xyz[:], r2.xyz[:])
+		x3, y3 := Uint64ToAffine(res)
+
+		r3 := AffineToP256Point(x3,y3)
+
+		tmp1 := P256Point{r1.xyz}
+		tmp2 := P256Point{r2.xyz}
+		tmp3 := P256Point{r3.xyz}
+		at.Point1 = append(at.Point1,tmp1)
+		at.Point2 = append(at.Point2,tmp2)
+		at.Point3 = append(at.Point3,tmp3)
+	}
+
+	atBytes,err := json.Marshal(at)
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	f,err := os.OpenFile("pointaddtest.txt",os.O_RDWR | os.O_CREATE | os.O_TRUNC |os.O_APPEND,0755)
+	if err != nil {
+		panic(err)
+		return
+	}
+	defer f.Close()
+
+	_,err = f.Write(atBytes)
+	if err != nil {
+		panic(err)
+		return
+	}
+}
+
+func PointAdd()  {
+
+	f,err := os.Open("pointaddtest.txt")
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	defer f.Close()
+
+	buf := make([]byte,1024000)
+	n,err := f.Read(buf)
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	var at AddTest
+	err = json.Unmarshal(buf[:n],&at)
+	if err != nil {
+		panic(err)
+		return
+	}
+
+
+	for i:=0;i<100;i++ {
+		r1 := p256Point{at.Point1[i].XYZ}
+		r2 := p256Point{at.Point2[i].XYZ}
+		res := make([]uint64,12)
+		sm2p256PointAddAsm(res, r1.xyz[:], r2.xyz[:])
+		x3, y3 := Uint64ToAffine(res)
+
+		x4,y4 := Uint64ToAffine(at.Point3[i].XYZ[:])
+
+		if !bytes.Equal(x3.Bytes(),x3.Bytes()) || !bytes.Equal(y3.Bytes(),y4.Bytes()) {
+			fmt.Println("==============point add results:==========")
+			Hexprint(x3.Bytes())
+			Hexprint(y3.Bytes())
+			fmt.Println("==============correct results:==========")
+			Hexprint(x4.Bytes())
+			Hexprint(y4.Bytes())
+		}
+	}
+
 }
